@@ -119,6 +119,8 @@ const createTask = async (req, res) => {
         action: 'created',
         entityType: 'Task',
         entityId: createdTask._id,
+        taskId: createdTask._id,
+        projectId: createdTask.projectId,
         description: `${req.user.name} created Task "${createdTask.title}"`,
       });
     } catch (e) {}
@@ -193,6 +195,8 @@ const updateTask = async (req, res) => {
         action: 'updated',
         entityType: 'Task',
         entityId: updatedTask._id,
+        taskId: updatedTask._id,
+        projectId: updatedTask.projectId,
         description: `${req.user.name} updated Task "${updatedTask.title}"`,
       });
     } catch (e) {}
@@ -247,6 +251,8 @@ const deleteTask = async (req, res) => {
         action: 'deleted',
         entityType: 'Task',
         entityId: task._id,
+        taskId: task._id,
+        projectId: task.projectId,
         description: `${req.user.name} deleted Task "${title}"`,
       });
     } catch (e) {}
@@ -292,6 +298,8 @@ const updateTaskStatus = async (req, res) => {
         action: 'status_changed',
         entityType: 'Task',
         entityId: updatedTask._id,
+        taskId: updatedTask._id,
+        projectId: updatedTask.projectId,
         description: `${req.user.name} moved "${updatedTask.title}" to ${status}`,
       });
     } catch (e) {}

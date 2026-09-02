@@ -72,6 +72,7 @@ const createProject = async (req, res) => {
         action: 'created',
         entityType: 'Project',
         entityId: createdProject._id,
+        projectId: createdProject._id,
         description: `${req.user.name} created Project "${createdProject.projectName}"`,
       });
     } catch (e) {}
@@ -127,6 +128,7 @@ const updateProject = async (req, res) => {
         action: 'updated',
         entityType: 'Project',
         entityId: updatedProject._id,
+        projectId: updatedProject._id,
         description: `${req.user.name} updated Project "${updatedProject.projectName}"`,
       });
     } catch (e) {}
@@ -169,6 +171,7 @@ const deleteProject = async (req, res) => {
         action: 'deleted',
         entityType: 'Project',
         entityId: project._id,
+        projectId: project._id,
         description: `${req.user.name} deleted Project "${projectName}"`,
       });
     } catch (e) {}

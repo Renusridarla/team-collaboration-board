@@ -1,107 +1,191 @@
 @import 'tailwindcss';
 
 :root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   color-scheme: dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --bg-dark: #09090b;
+  --panel-dark: #121215;
+  --card-dark: #18181b;
+  --border-dark: #27272a;
+  --text-main: #f4f4f5;
+  --text-muted: #a1a1aa;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #ffffff;
-  color: #000000;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
 }
 
-/* Theme variables for professional orange & white */
-:root {
-  --brand-600: #d35400;
-  --brand-500: #f97316;
-  --brand-400: #fb923c;
-  --brand-300: #fdba74;
-  --bg-0: #ffffff;
-  --surface: #ffffff;
-  --muted: #6b7280;
-  --border: #e6e7ea;
-  --card: #ffffff;
-  --panel: #f8fafb;
+/* Animations & Keyframes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Map common dark utility classes (used across the app) to the light theme colors */
-.bg-slate-950 { background-color: var(--bg-0) !important; }
-.bg-slate-900 { background-color: var(--panel) !important; }
-.bg-slate-900\/80 { background-color: rgba(248,250,251,0.8) !important; }
-.bg-slate-900\/70 { background-color: rgba(248,250,251,0.7) !important; }
-.bg-slate-800 { background-color: var(--card) !important; }
-.bg-slate-700 { background-color: #fafafa !important; }
-.bg-slate-800\/70 { background-color: rgba(255,255,255,0.7) !important; }
-.bg-slate-800\/60 { background-color: rgba(255,255,255,0.6) !important; }
-.text-slate-100 { color: #000000 !important; }
-.text-white { color: #000000 !important; }
-.text-slate-200 { color: #000000 !important; }
-.text-slate-300 { color: #000000 !important; }
-.text-slate-400 { color: #000000 !important; }
-.border-slate-800 { border-color: var(--border) !important; }
-.border-slate-700 { border-color: #eef1f3 !important; }
-
-/* Accent color: map cyan utilities to orange palette */
-.bg-cyan-500, .bg-cyan-500\/15, .bg-cyan-500\/10 { background-color: var(--brand-500) !important; }
-.bg-cyan-500\/25 { background-color: rgba(249,115,22,0.25) !important; }
-.text-cyan-300 { color: var(--brand-400) !important; }
-.text-cyan-400 { color: var(--brand-500) !important; }
-.border-cyan-500 { border-color: var(--brand-500) !important; }
-.from-cyan-500 { --tw-gradient-from: var(--brand-500) !important; }
-.to-blue-600 { --tw-gradient-to: var(--brand-400) !important; }
-
-/* Loading spinner accent */
-.border-t-cyan-500 { border-top-color: var(--brand-500) !important; }
-
-/* Buttons and badges fallback styling to ensure readability */
-.rounded-full.bg-cyan-500\/15 { background-color: rgba(249,115,22,0.15) !important; color: var(--brand-400) !important; }
-
-/* Improve contrast for sidebar active / orange backgrounds */
-/* Active sidebar background: subtle warm tint that matches off-white + orange text */
-.bg-cyan-500\/15 { background-color: #fff3e0 !important; color: var(--brand-500) !important; }
-/* solid accent remains orange */
-.bg-cyan-500 { background-color: var(--brand-500) !important; color: #ffffff !important; }
-/* ensure items using text-cyan-300 on dark active bg become orange for visibility */
-.bg-cyan-500\/15.text-cyan-300,
-.bg-cyan-500\/15 .text-cyan-300 {
-  color: var(--brand-500) !important;
-}
-/* ensure icons inside active nav are also orange */
-.bg-cyan-500\/15 svg { color: var(--brand-500) !important; }
-
-/* Left sidebar warm off-white background */
-.sidebar { background-color: #fff7ed !important; }
-.sidebar .border-slate-800 { border-color: #f3e6db !important; }
-.sidebar .text-slate-400 { color: #6b4f39 !important; }
-.sidebar .text-slate-300 { color: #5a3f2a !important; }
-
-/* Sidebar hover: make hover background subtle and text/icon orange for contrast */
-.sidebar nav a:hover,
-.sidebar nav button:hover {
-  background-color: #fff3e0 !important;
-  color: var(--brand-500) !important;
-}
-.sidebar nav a:hover svg,
-.sidebar nav button:hover svg {
-  color: var(--brand-500) !important;
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
-/* Profile bubble on the right: gentle warm background and darker text */
-.profile-bubble { background-color: #fff4ea !important; border-color: #f3e0d1 !important; }
-.profile-bubble .text-sm, .profile-bubble .text-xs { color: #5a3f2a !important; }
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
 
-/* Improve orange accent visibility for stat cards and other pale orange backgrounds */
-.bg-cyan-500\/10 { background-color: rgba(249,115,22,0.08) !important; }
-.text-cyan-300 { color: #d35400 !important; }
-.bg-cyan-500\/15 { background-color: #fff3e0 !important; color: var(--brand-500) !important; }
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
 
+/* Micro-interaction Utility Classes */
+.animate-fade-in {
+  animation: fadeInUp 220ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 180ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-slide-in {
+  animation: slideInRight 200ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.skeleton-box {
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+  background-color: #27272a;
+  border-radius: 0.5rem;
+}
+
+/* Button & Card Micro-Interactions */
+.btn-interaction {
+  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.btn-interaction:hover {
+  transform: translateY(-1px);
+}
+
+.btn-interaction:active {
+  transform: scale(0.97) translateY(0);
+}
+
+.card-hover {
+  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 200ms ease, box-shadow 200ms ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: #3f3f46 !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+}
+
+/* Input Focus Ring */
+input:focus, select:focus, textarea:focus {
+  border-color: #52525b !important;
+  box-shadow: 0 0 0 1px #52525b !important;
+  outline: none;
+}
+
+/* Strict Black & Grey Theme Overrides */
+.bg-slate-950, .bg-zinc-950 { background-color: #09090b !important; }
+.bg-slate-900, .bg-zinc-900 { background-color: #121215 !important; }
+.bg-slate-900\/90, .bg-zinc-900\/90 { background-color: rgba(18, 18, 21, 0.9) !important; }
+.bg-slate-900\/80, .bg-zinc-900\/80 { background-color: rgba(18, 18, 21, 0.8) !important; }
+.bg-slate-900\/70, .bg-zinc-900\/70 { background-color: rgba(18, 18, 21, 0.7) !important; }
+.bg-slate-800, .bg-zinc-800 { background-color: #18181b !important; }
+.bg-slate-800\/80, .bg-zinc-800\/80 { background-color: rgba(24, 24, 27, 0.8) !important; }
+.bg-slate-800\/70, .bg-zinc-800\/70 { background-color: rgba(24, 24, 27, 0.7) !important; }
+.bg-slate-700, .bg-zinc-700 { background-color: #27272a !important; }
+
+.border-slate-800, .border-zinc-800 { border-color: #27272a !important; }
+.border-slate-700, .border-zinc-700 { border-color: #3f3f46 !important; }
+
+.text-slate-100, .text-zinc-100 { color: #f4f4f5 !important; }
+.text-white { color: #ffffff !important; }
+.text-slate-300, .text-zinc-300 { color: #d4d4d8 !important; }
+.text-slate-400, .text-zinc-400 { color: #a1a1aa !important; }
+.text-slate-500, .text-zinc-500 { color: #71717a !important; }
+
+/* Override any leftover colorful utility classes */
+.bg-cyan-500, .bg-cyan-500\/15, .bg-cyan-500\/10, .bg-cyan-500\/25,
+.bg-blue-500, .bg-indigo-500, .bg-violet-500, .bg-purple-500 {
+  background-color: #27272a !important;
+  color: #f4f4f5 !important;
+}
+
+.text-cyan-300, .text-cyan-400, .text-cyan-500,
+.text-blue-400, .text-indigo-400, .text-violet-400, .text-purple-400 {
+  color: #e4e4e7 !important;
+}
+
+.border-cyan-500, .border-blue-500 {
+  border-color: #52525b !important;
+}
+
+.border-t-cyan-500 {
+  border-top-color: #e4e4e7 !important;
+}
+
+/* Custom Black & Grey Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46;
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 #root {
   min-height: 100vh;

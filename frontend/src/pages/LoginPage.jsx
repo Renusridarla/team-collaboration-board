@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import CustomCursor from '../components/CustomCursor';
+import Magnetic from '../components/Magnetic';
+import TiltCard from '../components/TiltCard';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,12 +21,7 @@ export default function LoginPage() {
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      setError('Please enter both your email and password.');
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError('Please enter a valid email address.');
+      setError('Please enter both email and password.');
       return;
     }
 
@@ -33,64 +31,86 @@ export default function LoginPage() {
       await login(trimmedEmail, trimmedPassword);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      setError(err.message || 'Login failed: Invalid email or password.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 px-4 py-16 text-white">
-      <div className="mx-auto flex max-w-5xl flex-col overflow-hidden rounded-3xl bg-slate-800 shadow-2xl md:flex-row">
-        <div className="flex-1 bg-gradient-to-br from-cyan-500 to-blue-600 p-10">
-          <h1 className="text-3xl font-semibold">Welcome back</h1>
-          <p className="mt-3 text-sm text-cyan-50">Sign in to manage your team and projects.</p>
+    <div className="relative min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12 text-zinc-100 overflow-hidden font-sans">
+      <CustomCursor />
+
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute h-[600px] w-[600px] rounded-full bg-zinc-800/10 blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+      <div className="w-full max-w-md space-y-6 relative z-10 animate-fade-in">
+        <div className="text-center space-y-2">
+          <Magnetic strength={6}>
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-white font-bold text-lg shadow-lg">
+              TC
+            </div>
+          </Magnetic>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Sign in to Team Board</h1>
+          <p className="text-xs text-zinc-400">Enter your credentials to access your workspace</p>
         </div>
-        <div className="flex-1 p-8 sm:p-10">
-          <h2 className="text-2xl font-semibold">Login</h2>
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
+
+        <TiltCard className="p-6 shadow-2xl space-y-4">
+          {error && (
+            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-xs text-zinc-200 animate-scale-in">
+              {error}
+            </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="mb-1 block text-sm">Email</label>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Email Address</label>
               <input
                 type="email"
                 value={email}
-                onChange={(event) => {
-                  setEmail(event.target.value);
+                onChange={(e) => {
+                  setEmail(e.target.value);
                   if (error) setError('');
                 }}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0"
+                placeholder="name@company.com"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
                 required
               />
             </div>
+
             <div>
-              <label className="mb-1 block text-sm">Password</label>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Password</label>
               <input
                 type="password"
                 value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
+                onChange={(e) => {
+                  setPassword(e.target.value);
                   if (error) setError('');
                 }}
-                className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0"
+                placeholder="••••••••"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
                 required
               />
             </div>
-            {error ? <p className="text-sm text-red-400">{error}</p> : null}
-            <button
-              className="w-full rounded-lg bg-cyan-500 px-4 py-2 font-medium text-white transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-70"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Signing in...' : 'Sign in'}
-            </button>
+
+            <Magnetic strength={8} className="w-full">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
+              >
+                {isSubmitting ? 'Signing in...' : 'Sign In'}
+              </button>
+            </Magnetic>
           </form>
-          <p className="mt-5 text-sm text-slate-300">
-            Need an account?{' '}
-            <Link to="/register" className="font-medium text-cyan-400">
-              Create one
+
+          <div className="pt-2 text-center text-xs text-zinc-400 border-t border-zinc-800">
+            Don't have an account?{' '}
+            <Link to="/register" className="font-semibold text-white underline hover:text-zinc-300">
+              Create account
             </Link>
-          </p>
-        </div>
+          </div>
+        </TiltCard>
       </div>
     </div>
   );

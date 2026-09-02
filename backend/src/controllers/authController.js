@@ -9,13 +9,17 @@ const registerUser = async (req, res) => {
       return res.status(400).json({ message: 'Please provide name, email, and password' });
     }
 
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
     const validRoles = ['Admin', 'Team Member'];
     const normalizedEmail = email.toLowerCase().trim();
     const selectedRole = role && validRoles.includes(role) ? role : 'Team Member';
 
     const existingUser = await User.findOne({ email: normalizedEmail });
     if (existingUser) {
-      return res.status(409).json({ message: 'A user with that email already exists' });
+      return res.status(409).json({ message: 'Registration failed: Email already exists.' });
     }
 
     const user = await User.create({
@@ -35,7 +39,7 @@ const registerUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to register user', error: error.message });
+    res.status(500).json({ message: 'Registration failed', error: error.message });
   }
 };
 
@@ -67,7 +71,7 @@ const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to log in', error: error.message });
+    res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
 
@@ -82,4 +86,13 @@ const getProfile = async (req, res) => {
   });
 };
 
-module.exports = { registerUser, loginUser, getProfile };
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password').sort({ name: 1 });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch users', error: error.message });
+  }
+};
+
+module.exports = { registerUser, loginUser, getProfile, getUsers };

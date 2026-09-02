@@ -12,6 +12,11 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    workspaceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Workspace',
+      default: null,
+    },
     workspaceName: {
       type: String,
       trim: true,

@@ -23,12 +23,15 @@ const createComment = async (req, res) => {
 
     // Activity log
     try {
+      const taskObj = await Task.findById(taskId).select('_id projectId title');
       await Activity.create({
         userId: req.user._id,
         action: 'created',
         entityType: 'Comment',
         entityId: created._id,
-        description: `${req.user.name} commented on task`,
+        taskId: taskObj?._id,
+        projectId: taskObj?.projectId,
+        description: `${req.user.name} commented on task "${taskObj?.title || ''}"`,
       });
     } catch (e) {}
 
@@ -70,6 +73,7 @@ const updateComment = async (req, res) => {
         action: 'updated',
         entityType: 'Comment',
         entityId: comment._id,
+        taskId: comment.taskId,
         description: `${req.user.name} updated a comment`,
       });
     } catch (e) {}
@@ -94,6 +98,7 @@ const deleteComment = async (req, res) => {
         action: 'deleted',
         entityType: 'Comment',
         entityId: comment._id,
+        taskId: comment.taskId,
         description: `${req.user.name} deleted a comment`,
       });
     } catch (e) {}

@@ -95,10 +95,4 @@ export default function SearchBar({ placeholder = 'Search projects, tasks, comme
     </div>
   );
 }
-export default function SearchBar({ value, onChange, placeholder = 'Search tasks...' }) {
-  return (
-    <div className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2">
-      <input value={value} onChange={onChange} className="w-full bg-transparent text-sm text-white outline-none" placeholder={placeholder} />
-    </div>
-  );
-}
+

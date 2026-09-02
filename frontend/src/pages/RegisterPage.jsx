@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import CustomCursor from '../components/CustomCursor';
+import Magnetic from '../components/Magnetic';
+import TiltCard from '../components/TiltCard';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'Team Member' });
@@ -24,12 +27,7 @@ export default function RegisterPage() {
     const trimmedPassword = form.password.trim();
 
     if (!trimmedName || !trimmedEmail || !trimmedPassword) {
-      setError('Please fill in your name, email, and password.');
-      return;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
-      setError('Please enter a valid email address.');
+      setError('Please fill in all required fields.');
       return;
     }
 
@@ -44,53 +42,108 @@ export default function RegisterPage() {
       await register(trimmedName, trimmedEmail, trimmedPassword, form.role);
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+      setError(err.message || 'Registration failed. Email may already be in use.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 px-4 py-16 text-white">
-      <div className="mx-auto flex max-w-5xl flex-col overflow-hidden rounded-3xl bg-slate-800 shadow-2xl md:flex-row">
-        <div className="flex-1 bg-gradient-to-br from-purple-500 to-fuchsia-600 p-10">
-          <h1 className="text-3xl font-semibold">Create your workspace</h1>
-          <p className="mt-3 text-sm text-purple-50">Start collaborating with your team in minutes.</p>
+    <div className="relative min-h-screen bg-zinc-950 flex items-center justify-center px-4 py-12 text-zinc-100 overflow-hidden font-sans">
+      <CustomCursor />
+
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute h-[600px] w-[600px] rounded-full bg-zinc-800/10 blur-[120px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+
+      <div className="w-full max-w-md space-y-6 relative z-10 animate-fade-in">
+        <div className="text-center space-y-2">
+          <Magnetic strength={6}>
+            <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 border border-zinc-800 text-white font-bold text-lg shadow-lg">
+              TC
+            </div>
+          </Magnetic>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Create an Account</h1>
+          <p className="text-xs text-zinc-400">Join Team Collaboration Board to start managing projects</p>
         </div>
-        <div className="flex-1 p-8 sm:p-10">
-          <h2 className="text-2xl font-semibold">Register</h2>
-          <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="mb-1 block text-sm">Name</label>
-              <input name="name" value={form.name} onChange={handleChange} className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0" required />
+
+        <TiltCard className="p-6 shadow-2xl space-y-4">
+          {error && (
+            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-xs text-zinc-200 animate-scale-in">
+              {error}
             </div>
+          )}
+
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="mb-1 block text-sm">Email</label>
-              <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0" required />
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Full Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="John Doe"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
+                required
+              />
             </div>
+
             <div>
-              <label className="mb-1 block text-sm">Password</label>
-              <input type="password" name="password" value={form.password} onChange={handleChange} className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0" required />
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Email Address *</label>
+              <input
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="name@company.com"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
+                required
+              />
             </div>
+
             <div>
-              <label className="mb-1 block text-sm">Role</label>
-              <select name="role" value={form.role} onChange={handleChange} className="w-full rounded-lg border border-slate-600 bg-slate-700 px-3 py-2 outline-none ring-0">
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Password *</label>
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Minimum 6 characters"
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-zinc-500 focus:outline-none"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-zinc-300 mb-1">Role</label>
+              <select
+                name="role"
+                value={form.role}
+                onChange={handleChange}
+                className="w-full rounded-lg border border-zinc-800 bg-zinc-950 px-3.5 py-2.5 text-sm text-white focus:border-zinc-500 focus:outline-none"
+              >
                 <option value="Team Member">Team Member</option>
                 <option value="Admin">Admin</option>
               </select>
             </div>
-            {error ? <p className="text-sm text-red-400">{error}</p> : null}
-            <button className="w-full rounded-lg bg-purple-500 px-4 py-2 font-medium text-white transition hover:bg-purple-400 disabled:cursor-not-allowed disabled:opacity-70" type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Creating account...' : 'Create account'}
-            </button>
+
+            <Magnetic strength={8} className="w-full">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
+              >
+                {isSubmitting ? 'Creating account...' : 'Create Account'}
+              </button>
+            </Magnetic>
           </form>
-          <p className="mt-5 text-sm text-slate-300">
+
+          <div className="pt-2 text-center text-xs text-zinc-400 border-t border-zinc-800">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-cyan-400">
+            <Link to="/login" className="font-semibold text-white underline hover:text-zinc-300">
               Sign in
             </Link>
-          </p>
-        </div>
+          </div>
+        </TiltCard>
       </div>
     </div>
   );

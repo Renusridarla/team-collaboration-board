@@ -1,11 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext(null);
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -18,8 +14,6 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return;
     }
-
-    api.defaults.headers.common.Authorization = `Bearer ${storedToken}`;
 
     api
       .get('/auth/profile')
@@ -35,30 +29,37 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = async (email, password) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { token: newToken, user: loggedInUser } = response.data;
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      const { token: newToken, user: loggedInUser } = response.data;
 
-    localStorage.setItem('token', newToken);
-    api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-    setToken(newToken);
-    setUser(loggedInUser);
-    return response.data;
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      setUser(loggedInUser);
+      return response.data;
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Login failed. Please check your credentials.';
+      throw new Error(msg);
+    }
   };
 
   const register = async (name, email, password, role = 'Team Member') => {
-    const response = await api.post('/auth/register', { name, email, password, role });
-    const { token: newToken, user: registeredUser } = response.data;
+    try {
+      const response = await api.post('/auth/register', { name, email, password, role });
+      const { token: newToken, user: registeredUser } = response.data;
 
-    localStorage.setItem('token', newToken);
-    api.defaults.headers.common.Authorization = `Bearer ${newToken}`;
-    setToken(newToken);
-    setUser(registeredUser);
-    return response.data;
+      localStorage.setItem('token', newToken);
+      setToken(newToken);
+      setUser(registeredUser);
+      return response.data;
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Registration failed. Please try again.';
+      throw new Error(msg);
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
-    delete api.defaults.headers.common.Authorization;
     setToken(null);
     setUser(null);
   };

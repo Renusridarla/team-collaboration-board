@@ -4,9 +4,8 @@ import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 import KanbanColumn from '../components/KanbanColumn';
-import axios from 'axios';
-
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api' });
+import api from '../services/api';
+import { LayoutGrid, ArrowLeft } from 'lucide-react';
 
 export default function KanbanBoardPage() {
   const { id: projectId } = useParams();
@@ -14,55 +13,46 @@ export default function KanbanBoardPage() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [filters, setFilters] = useState({ assignedUser: '', priority: '', search: '' });
+  const [filters, setFilters] = useState({ priority: '', search: '' });
 
-  const load = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) return navigate('/login');
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
-    setLoading(true);
-    setError('');
+  const loadTasks = async () => {
     try {
+      setLoading(true);
+      setError('');
       const response = await api.get(`/tasks/project/${projectId}`);
       setTasks(response.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to load board');
+      setError(err.response?.data?.message || 'Unable to load kanban board tasks');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    load();
-    const handler = () => load();
+    loadTasks();
+    const handler = () => loadTasks();
     window.addEventListener('tasksUpdated', handler);
     return () => window.removeEventListener('tasksUpdated', handler);
   }, [projectId]);
 
   const onEdit = (task) => navigate(`/tasks/${task._id}/edit`);
+
   const onDelete = async (task) => {
-    const confirmed = window.confirm(`Delete task "${task.title}"?`);
-    if (!confirmed) return;
-    const token = localStorage.getItem('token');
-    if (!token) return navigate('/login');
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
+    if (!window.confirm(`Delete task "${task.title}"?`)) return;
     try {
       await api.delete(`/tasks/${task._id}`);
-      load();
-      window.dispatchEvent(new Event('tasksUpdated'));
+      loadTasks();
+      try {
+        window.dispatchEvent(new Event('tasksUpdated'));
+      } catch (e) {}
     } catch (err) {
       alert(err.response?.data?.message || 'Unable to delete task');
     }
   };
 
-  const filtered = useMemo(() => {
+  const filteredTasks = useMemo(() => {
     return tasks.filter((t) => {
       if (filters.priority && t.priority !== filters.priority) return false;
-      if (filters.assignedUser) {
-        if (filters.assignedUser === 'me') {
-          if (t.assignedTo?._id !== (localStorage.getItem('userId') || null)) return false;
-        } else if (t.assignedTo?._id !== filters.assignedUser) return false;
-      }
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (!t.title.toLowerCase().includes(q)) return false;
@@ -72,29 +62,42 @@ export default function KanbanBoardPage() {
   }, [tasks, filters]);
 
   const columns = {
-    'To Do': filtered.filter((t) => t.status === 'To Do'),
-    'In Progress': filtered.filter((t) => t.status === 'In Progress'),
-    Completed: filtered.filter((t) => t.status === 'Completed'),
+    'To Do': filteredTasks.filter((t) => t.status === 'To Do' || t.status === 'TODO'),
+    'In Progress': filteredTasks.filter((t) => t.status === 'In Progress' || t.status === 'IN_PROGRESS'),
+    Completed: filteredTasks.filter((t) => t.status === 'Completed' || t.status === 'COMPLETED'),
   };
-
-  if (loading) return <DashboardLayout title="Kanban Board"><LoadingSpinner /></DashboardLayout>;
-
-  if (error) return (<DashboardLayout title="Kanban Board"><div className="rounded-3xl border border-rose-500/30 bg-rose-500/10 p-6 text-sm text-rose-300">{error}</div></DashboardLayout>);
-
-  if (!tasks.length) return (<DashboardLayout title="Kanban Board"><EmptyState title="No tasks" description="No tasks for this project yet." action={null} /></DashboardLayout>);
 
   return (
     <DashboardLayout title="Kanban Board">
       <div className="space-y-6">
-        <div className="flex items-center justify-between gap-4">
+        <button
+          onClick={() => navigate(`/projects/${projectId}`)}
+          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition"
+        >
+          <ArrowLeft size={16} /> Back to Project Details
+        </button>
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-white">Kanban</h2>
-            <p className="text-sm text-slate-400">Project tasks organized by status.</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
+              <LayoutGrid size={22} className="text-zinc-400" /> Task Board
+            </h2>
+            <p className="text-sm text-zinc-400">Manage tasks by status workflow</p>
           </div>
-          <div className="flex gap-2">
-            <input placeholder="Search title" value={filters.search} onChange={(e) => setFilters((s) => ({ ...s, search: e.target.value }))} className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white" />
-            <select value={filters.priority} onChange={(e) => setFilters((s) => ({ ...s, priority: e.target.value }))} className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white">
-              <option value="">All priority</option>
+
+          <div className="flex flex-wrap gap-2">
+            <input
+              placeholder="Filter tasks..."
+              value={filters.search}
+              onChange={(e) => setFilters((s) => ({ ...s, search: e.target.value }))}
+              className="rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-zinc-600 focus:outline-none"
+            />
+            <select
+              value={filters.priority}
+              onChange={(e) => setFilters((s) => ({ ...s, priority: e.target.value }))}
+              className="rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-xs text-white focus:border-zinc-600 focus:outline-none"
+            >
+              <option value="">All Priorities</option>
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
               <option value="High">High</option>
@@ -102,11 +105,52 @@ export default function KanbanBoardPage() {
           </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          <KanbanColumn title="To Do" tasks={columns['To Do']} onEdit={onEdit} onDelete={onDelete} onStatusChange={load} />
-          <KanbanColumn title="In Progress" tasks={columns['In Progress']} onEdit={onEdit} onDelete={onDelete} onStatusChange={load} />
-          <KanbanColumn title="Completed" tasks={columns['Completed']} onEdit={onEdit} onDelete={onDelete} onStatusChange={load} />
-        </div>
+        {loading ? (
+          <div className="flex py-16 justify-center">
+            <LoadingSpinner />
+          </div>
+        ) : error ? (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-zinc-400">
+            <p>{error}</p>
+          </div>
+        ) : tasks.length === 0 ? (
+          <EmptyState
+            title="No tasks in project"
+            description="Create your first task for this project to start tracking work on the Kanban board."
+            actionText="Create Task"
+            onAction={() => navigate('/tasks/new', { state: { projectId } })}
+          />
+        ) : (
+          <div className="grid gap-6 md:grid-cols-3">
+            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+              <KanbanColumn
+                title="TODO"
+                tasks={columns['To Do']}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onStatusChange={loadTasks}
+              />
+            </div>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+              <KanbanColumn
+                title="IN PROGRESS"
+                tasks={columns['In Progress']}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onStatusChange={loadTasks}
+              />
+            </div>
+            <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4">
+              <KanbanColumn
+                title="COMPLETED"
+                tasks={columns['Completed']}
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onStatusChange={loadTasks}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

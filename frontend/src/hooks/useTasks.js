@@ -1,9 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
+import api from '../services/api';
 
 export function useTasks() {
   const [tasks, setTasks] = useState([]);
@@ -13,15 +9,6 @@ export function useTasks() {
   const [success, setSuccess] = useState('');
 
   const loadTasks = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setTasks([]);
-      setProjects([]);
-      setLoading(false);
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setLoading(true);
     setError('');
 
@@ -30,8 +17,8 @@ export function useTasks() {
         api.get('/tasks'),
         api.get('/projects'),
       ]);
-      setTasks(tasksResponse.data);
-      setProjects(projectsResponse.data);
+      setTasks(tasksResponse.data || []);
+      setProjects(projectsResponse.data || []);
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to load tasks');
     } finally {

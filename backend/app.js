@@ -11,6 +11,9 @@ const activityRoutes = require('./src/routes/activityRoutes');
 const notificationRoutes = require('./src/routes/notificationRoutes');
 const searchRoutes = require('./src/routes/searchRoutes');
 const calendarRoutes = require('./src/routes/calendarRoutes');
+const workspaceRoutes = require('./src/routes/workspaceRoutes');
+const invitationRoutes = require('./src/routes/invitationRoutes');
+const dashboardRoutes = require('./src/routes/dashboardRoutes');
 
 const app = express();
 
@@ -18,10 +21,13 @@ app.use(cors());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'API is running' });
+  res.json({ message: 'Team Collaboration Board API is running' });
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/workspaces', workspaceRoutes);
+app.use('/api/invitations', invitationRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/comments', commentRoutes);

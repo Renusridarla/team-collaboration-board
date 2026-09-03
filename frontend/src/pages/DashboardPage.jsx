@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import ActivityTimeline from '../components/ActivityTimeline';
 import AnimatedCounter from '../components/AnimatedCounter';
@@ -12,6 +13,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const loadDashboardData = async () => {
     try {
@@ -95,7 +97,7 @@ export default function DashboardPage() {
                   </div>
                   <Magnetic strength={4}>
                     <button
-                      onClick={() => window.location.assign('/activity')}
+                      onClick={() => navigate('/activity')}
                       className="flex items-center gap-1 text-xs font-medium text-zinc-300 btn-interaction hover:text-white"
                     >
                       View all <ArrowUpRight size={14} />
@@ -126,7 +128,7 @@ export default function DashboardPage() {
                     stats.upcomingDeadlines.map((item) => (
                       <div
                         key={item.id}
-                        onClick={() => window.location.assign(`/tasks/${item.id}`)}
+                        onClick={() => navigate(`/tasks/${item.id}`)}
                         className="rounded-lg border border-zinc-800/80 bg-zinc-950 p-3.5 card-hover cursor-pointer flex items-center justify-between"
                       >
                         <div>

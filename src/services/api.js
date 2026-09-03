@@ -2,13 +2,11 @@ import axios from 'axios';
 
 const getApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  if (envUrl && !envUrl.includes('localhost')) {
-    return envUrl;
-  }
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+  // If envUrl is missing, contains localhost, or contains the old dummy placeholder URL, use the real live Render backend
+  if (!envUrl || envUrl.includes('localhost') || envUrl.includes('team-collaboration-backend.onrender.com')) {
     return 'https://team-collaboration-board-b4oe.onrender.com/api';
   }
-  return envUrl || 'http://localhost:5000/api';
+  return envUrl;
 };
 
 const API_URL = getApiUrl();

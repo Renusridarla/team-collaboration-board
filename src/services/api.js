@@ -1,18 +1,17 @@
 import axios from 'axios';
 
-const getApiUrl = () => {
+const getBaseUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL;
-  // If envUrl is missing, contains localhost, or contains the old dummy placeholder URL, use the real live Render backend
   if (!envUrl || envUrl.includes('localhost') || envUrl.includes('team-collaboration-backend.onrender.com')) {
     return 'https://team-collaboration-board-b4oe.onrender.com/api';
   }
   return envUrl;
 };
 
-const API_URL = getApiUrl();
+export const API_BASE_URL = getBaseUrl();
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -35,7 +34,7 @@ api.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      if (window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      if (typeof window !== 'undefined' && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
         window.location.href = '/login';
       }
     }

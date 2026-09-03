@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CustomCursor from '../components/CustomCursor';
 import Magnetic from '../components/Magnetic';
-import TiltCard from '../components/TiltCard';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: '', email: '', password: '', role: 'Team Member' });
@@ -66,7 +65,7 @@ export default function RegisterPage() {
           <p className="text-xs text-zinc-400">Join Team Collaboration Board to start managing projects</p>
         </div>
 
-        <TiltCard className="p-6 shadow-2xl space-y-4">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl space-y-4">
           {error && (
             <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-xs text-zinc-200 animate-scale-in">
               {error}
@@ -126,15 +125,13 @@ export default function RegisterPage() {
               </select>
             </div>
 
-            <Magnetic strength={8} className="w-full">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
-              >
-                {isSubmitting ? 'Creating account...' : 'Create Account'}
-              </button>
-            </Magnetic>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
+            >
+              {isSubmitting ? 'Creating account...' : 'Create Account'}
+            </button>
           </form>
 
           <div className="pt-2 text-center text-xs text-zinc-400 border-t border-zinc-800">
@@ -143,7 +140,7 @@ export default function RegisterPage() {
               Sign in
             </Link>
           </div>
-        </TiltCard>
+        </div>
       </div>
     </div>
   );

@@ -2,11 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import ProjectForm from '../components/ProjectForm';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
+import api from '../services/api';
 
 export default function CreateProjectPage() {
   const navigate = useNavigate();
@@ -23,13 +19,6 @@ export default function CreateProjectPage() {
   }, [success, navigate]);
 
   const handleSubmit = async (payload) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setIsSubmitting(true);
     setError('');
     setSuccess('');
@@ -46,13 +35,13 @@ export default function CreateProjectPage() {
 
   return (
     <DashboardLayout title="Create Project">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/30">
+      <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl animate-fade-in">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-white">Create a new project</h2>
-          <p className="mt-1 text-sm text-slate-400">Set up the project details and invite collaborators.</p>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Create a new project</h2>
+          <p className="mt-1 text-sm text-zinc-400">Set up the project details and invite collaborators.</p>
         </div>
         {success ? (
-          <div className="mb-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mb-4 rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">
             {success}
           </div>
         ) : null}

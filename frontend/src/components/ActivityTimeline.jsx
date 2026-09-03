@@ -1,13 +1,8 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import Activity from './Activity';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api' });
-
 export default function ActivityTimeline({ projectId, limit = 0 }) {
-  const token = localStorage.getItem('token');
-  if (token) api.defaults.headers.common.Authorization = `Bearer ${token}`;
-
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -28,8 +23,8 @@ export default function ActivityTimeline({ projectId, limit = 0 }) {
     load();
   }, [projectId, limit]);
 
-  if (loading) return <div className="text-sm text-slate-400">Loading activity...</div>;
-  if (error) return <div className="text-sm text-rose-400">{error}</div>;
+  if (loading) return <div className="text-sm text-zinc-400">Loading activity...</div>;
+  if (error) return <div className="text-sm text-zinc-400">{error}</div>;
 
   return (
     <div>

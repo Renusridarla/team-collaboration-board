@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CustomCursor from '../components/CustomCursor';
 import Magnetic from '../components/Magnetic';
-import TiltCard from '../components/TiltCard';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -55,7 +54,7 @@ export default function LoginPage() {
           <p className="text-xs text-zinc-400">Enter your credentials to access your workspace</p>
         </div>
 
-        <TiltCard className="p-6 shadow-2xl space-y-4">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl space-y-4">
           {error && (
             <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-xs text-zinc-200 animate-scale-in">
               {error}
@@ -93,15 +92,13 @@ export default function LoginPage() {
               />
             </div>
 
-            <Magnetic strength={8} className="w-full">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign In'}
-              </button>
-            </Magnetic>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
+            >
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
+            </button>
           </form>
 
           <div className="pt-2 text-center text-xs text-zinc-400 border-t border-zinc-800">
@@ -110,7 +107,7 @@ export default function LoginPage() {
               Create account
             </Link>
           </div>
-        </TiltCard>
+        </div>
       </div>
     </div>
   );

@@ -3,11 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProjectForm from '../components/ProjectForm';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
+import api from '../services/api';
 
 export default function EditProjectPage() {
   const { id } = useParams();
@@ -18,13 +14,6 @@ export default function EditProjectPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     const loadProject = async () => {
       try {
         const response = await api.get(`/projects/${id}`);
@@ -40,16 +29,9 @@ export default function EditProjectPage() {
     };
 
     loadProject();
-  }, [id, navigate]);
+  }, [id]);
 
   const handleSubmit = async (payload) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setIsSubmitting(true);
     setError('');
 
@@ -67,12 +49,12 @@ export default function EditProjectPage() {
 
   return (
     <DashboardLayout title="Edit Project">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/30">
+      <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl animate-fade-in">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-white">Edit project</h2>
-          <p className="mt-1 text-sm text-slate-400">Update project information and collaborators.</p>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Edit project</h2>
+          <p className="mt-1 text-sm text-zinc-400">Update project information and collaborators.</p>
         </div>
-        {project ? <ProjectForm initialValues={project} onSubmit={handleSubmit} isSubmitting={isSubmitting} submitLabel="Save Changes" error={error} /> : <p className="text-sm text-rose-400">{error}</p>}
+        {project ? <ProjectForm initialValues={project} onSubmit={handleSubmit} isSubmitting={isSubmitting} submitLabel="Save Changes" error={error} /> : <p className="text-sm text-zinc-400">{error}</p>}
       </div>
     </DashboardLayout>
   );

@@ -3,11 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DashboardLayout from '../components/DashboardLayout';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TaskForm from '../components/TaskForm';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
+import api from '../services/api';
 
 export default function EditTaskPage() {
   const { id } = useParams();
@@ -19,13 +15,6 @@ export default function EditTaskPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     const loadData = async () => {
       try {
         const [taskResponse, projectsResponse] = await Promise.all([api.get(`/tasks/${id}`), api.get('/projects')]);
@@ -44,21 +33,15 @@ export default function EditTaskPage() {
     };
 
     loadData();
-  }, [id, navigate]);
+  }, [id]);
 
   const handleSubmit = async (payload) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     setIsSubmitting(true);
     setError('');
 
     try {
       await api.put(`/tasks/${id}`, payload);
+      try { window.dispatchEvent(new Event('tasksUpdated')); } catch (e) {}
       navigate('/tasks');
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to update task');
@@ -71,12 +54,12 @@ export default function EditTaskPage() {
 
   return (
     <DashboardLayout title="Edit Task">
-      <div className="mx-auto max-w-3xl rounded-3xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl shadow-slate-950/30">
+      <div className="mx-auto max-w-3xl rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-xl animate-fade-in">
         <div className="mb-6">
-          <h2 className="text-2xl font-semibold text-white">Edit task</h2>
-          <p className="mt-1 text-sm text-slate-400">Adjust task details and keep delivery on track.</p>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Edit task</h2>
+          <p className="mt-1 text-sm text-zinc-400">Adjust task details and keep delivery on track.</p>
         </div>
-        {task ? <TaskForm initialValues={task} projects={projects} onSubmit={handleSubmit} isSubmitting={isSubmitting} submitLabel="Save Changes" error={error} /> : <p className="text-sm text-rose-400">{error}</p>}
+        {task ? <TaskForm initialValues={task} projects={projects} onSubmit={handleSubmit} isSubmitting={isSubmitting} submitLabel="Save Changes" error={error} /> : <p className="text-sm text-zinc-400">{error}</p>}
       </div>
     </DashboardLayout>
   );

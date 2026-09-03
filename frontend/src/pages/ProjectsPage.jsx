@@ -1,14 +1,10 @@
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useNavigate } from 'react';
+import api from '../services/api';
 import DashboardLayout from '../components/DashboardLayout';
 import EmptyState from '../components/EmptyState';
 import LoadingSpinner from '../components/LoadingSpinner';
 import ProjectList from '../components/ProjectList';
 import { useProjects } from '../hooks/useProjects';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -19,16 +15,8 @@ export default function ProjectsPage() {
   };
 
   const handleDelete = async (project) => {
-    const confirmed = window.confirm(`Delete project “${project.projectName}”?`);
+    const confirmed = window.confirm(`Delete project "${project.projectName}"?`);
     if (!confirmed) return;
-
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
 
     try {
       await api.delete(`/projects/${project._id}`);
@@ -41,20 +29,20 @@ export default function ProjectsPage() {
 
   return (
     <DashboardLayout title="Projects">
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div>
-          <h2 className="text-2xl font-semibold text-white">Projects</h2>
-          <p className="text-sm text-slate-400">Browse the projects you have access to.</p>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Projects</h2>
+          <p className="text-sm text-zinc-400">Browse the projects you have access to.</p>
         </div>
 
         {error ? (
-          <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+          <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">
             {error}
           </div>
         ) : null}
 
         {success ? (
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">
             {success}
           </div>
         ) : null}
@@ -64,7 +52,7 @@ export default function ProjectsPage() {
         ) : projects.length === 0 ? (
           <EmptyState
             title="No projects available"
-            description="There are no projects to display yet. Check back after projects are created."
+            description="There are no projects to display yet. Create a workspace or project to get started."
           />
         ) : (
           <ProjectList projects={projects} onEdit={handleEdit} onDelete={handleDelete} />

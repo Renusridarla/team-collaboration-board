@@ -7,11 +7,7 @@ import SearchBar from '../components/SearchBar';
 import TaskFilters from '../components/TaskFilters';
 import TaskList from '../components/TaskList';
 import { useTasks } from '../hooks/useTasks';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-});
+import api from '../services/api';
 
 export default function TasksPage() {
   const navigate = useNavigate();
@@ -53,16 +49,10 @@ export default function TasksPage() {
     const confirmed = window.confirm(`Delete ${task.title}?`);
     if (!confirmed) return;
 
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    api.defaults.headers.common.Authorization = `Bearer ${token}`;
     try {
       await api.delete(`/tasks/${task._id}`);
       setSuccess('Task deleted successfully');
+      try { window.dispatchEvent(new Event('tasksUpdated')); } catch (e) {}
       await loadTasks();
     } catch (err) {
       setError(err.response?.data?.message || 'Unable to delete task');
@@ -76,21 +66,21 @@ export default function TasksPage() {
 
   return (
     <DashboardLayout title="Tasks">
-      <div className="space-y-6">
+      <div className="space-y-6 animate-fade-in">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold text-white">Tasks</h2>
-            <p className="text-sm text-slate-400">Manage work across your projects.</p>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Tasks</h2>
+            <p className="text-sm text-zinc-400">Manage work across your projects.</p>
           </div>
-          <Link to="/tasks/new" className="rounded-xl bg-cyan-500 px-4 py-2 font-medium text-white transition hover:bg-cyan-400">
+          <Link to="/tasks/new" className="rounded-lg bg-zinc-100 px-4 py-2 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white">
             Create task
           </Link>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/80 p-4 shadow-xl shadow-slate-950/30">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-4 shadow-xl">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <SearchBar value={search} onChange={(event) => setSearch(event.target.value)} />
-            <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} className="rounded-xl border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white">
+            <select value={sortBy} onChange={(event) => setSortBy(event.target.value)} className="rounded-lg border border-zinc-800 bg-zinc-950 px-3 py-2 text-sm text-white focus:border-zinc-500 focus:outline-none">
               <option value="newest">Newest</option>
               <option value="oldest">Oldest</option>
               <option value="deadline">Deadline</option>
@@ -102,10 +92,10 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {error ? <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">{error}</div> : null}
-        {success ? <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{success}</div> : null}
+        {error ? <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">{error}</div> : null}
+        {success ? <div className="rounded-lg border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-200">{success}</div> : null}
 
-        {loading ? <LoadingSpinner /> : filteredTasks.length === 0 ? <EmptyState title="No tasks found" description="Create a new task or adjust your filters." action={<Link to="/tasks/new" className="rounded-xl bg-cyan-500 px-4 py-2 font-medium text-white">Create Task</Link>} /> : <TaskList tasks={filteredTasks} onEdit={(task) => navigate(`/tasks/${task._id}/edit`)} onDelete={handleDelete} onStatusChange={loadTasks} />}
+        {loading ? <LoadingSpinner /> : filteredTasks.length === 0 ? <EmptyState title="No tasks found" description="Create a new task or adjust your filters." action={<Link to="/tasks/new" className="rounded-lg bg-zinc-100 px-4 py-2 font-semibold text-zinc-950">Create Task</Link>} /> : <TaskList tasks={filteredTasks} onEdit={(task) => navigate(`/tasks/${task._id}/edit`)} onDelete={handleDelete} onStatusChange={loadTasks} />}
       </div>
     </DashboardLayout>
   );

@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import CustomCursor from '../components/CustomCursor';
 import Magnetic from '../components/Magnetic';
-import TiltCard from '../components/TiltCard';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -55,7 +54,7 @@ export default function LoginPage() {
           <p className="text-xs text-zinc-400">Enter your credentials to access your workspace</p>
         </div>
 
-        <TiltCard className="p-6 shadow-2xl space-y-4">
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 shadow-2xl space-y-4">
           {error && (
             <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3 text-xs text-zinc-200 animate-scale-in">
               {error}
@@ -110,7 +109,7 @@ export default function LoginPage() {
               Create account
             </Link>
           </div>
-        </TiltCard>
+        </div>
       </div>
     </div>
   );

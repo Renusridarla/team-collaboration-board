@@ -1,36 +1,65 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
-:root {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: dark;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  --bg-dark: #09090b;
-  --panel-dark: #121215;
-  --card-dark: #18181b;
-  --border-dark: #27272a;
-  --text-main: #f4f4f5;
-  --text-muted: #a1a1aa;
+@layer base {
+  body {
+    background-color: #09090b;
+    color: #f4f4f5;
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow-x: hidden;
+    background-image: 
+      radial-gradient(circle at 10% 10%, rgba(99, 102, 241, 0.07) 0%, transparent 35%),
+      radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 50% 40%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
 }
 
-html {
-  scroll-behavior: smooth;
+/* Custom Interaction Feedback */
+.btn-interaction {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
 }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: var(--bg-dark);
-  color: var(--text-main);
-  overflow-x: hidden;
+.btn-interaction:hover {
+  transform: translateY(-1.5px);
 }
 
-/* Animations & Keyframes */
-@keyframes fadeInUp {
+.btn-interaction:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Card Hover Micro-Interactions */
+.card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card-hover:hover {
+  border-color: rgba(161, 161, 170, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px 0 rgba(99, 102, 241, 0.05);
+}
+
+/* Skeleton Loading Pulse */
+.skeleton-box {
+  background: linear-gradient(90deg, #18181b 25%, #27272a 50%, #18181b 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Smooth Page Transitions */
+.animate-fade-in {
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(6px);
@@ -41,10 +70,14 @@ body {
   }
 }
 
+.animate-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.97);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -52,145 +85,21 @@ body {
   }
 }
 
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes skeletonPulse {
-  0%, 100% {
-    opacity: 0.4;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-/* Micro-interaction Utility Classes */
-.animate-fade-in {
-  animation: fadeInUp 220ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.animate-scale-in {
-  animation: scaleIn 180ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.animate-slide-in {
-  animation: slideInRight 200ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.skeleton-box {
-  animation: skeletonPulse 1.6s ease-in-out infinite;
-  background-color: #27272a;
-  border-radius: 0.5rem;
-}
-
-/* Button & Card Micro-Interactions */
-.btn-interaction {
-  transition: transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1), background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.btn-interaction:hover {
-  transform: translateY(-1px);
-}
-
-.btn-interaction:active {
-  transform: scale(0.97) translateY(0);
-}
-
-.card-hover {
-  transition: transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1), border-color 200ms ease, box-shadow 200ms ease;
-}
-
-.card-hover:hover {
-  transform: translateY(-3px);
-  border-color: #3f3f46 !important;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
-}
-
-/* Input Focus Ring */
-input:focus, select:focus, textarea:focus {
-  border-color: #52525b !important;
-  box-shadow: 0 0 0 1px #52525b !important;
-  outline: none;
-}
-
-/* Strict Black & Grey Theme Overrides */
-.bg-slate-950, .bg-zinc-950 { background-color: #09090b !important; }
-.bg-slate-900, .bg-zinc-900 { background-color: #121215 !important; }
-.bg-slate-900\/90, .bg-zinc-900\/90 { background-color: rgba(18, 18, 21, 0.9) !important; }
-.bg-slate-900\/80, .bg-zinc-900\/80 { background-color: rgba(18, 18, 21, 0.8) !important; }
-.bg-slate-900\/70, .bg-zinc-900\/70 { background-color: rgba(18, 18, 21, 0.7) !important; }
-.bg-slate-800, .bg-zinc-800 { background-color: #18181b !important; }
-.bg-slate-800\/80, .bg-zinc-800\/80 { background-color: rgba(24, 24, 27, 0.8) !important; }
-.bg-slate-800\/70, .bg-zinc-800\/70 { background-color: rgba(24, 24, 27, 0.7) !important; }
-.bg-slate-700, .bg-zinc-700 { background-color: #27272a !important; }
-
-.border-slate-800, .border-zinc-800 { border-color: #27272a !important; }
-.border-slate-700, .border-zinc-700 { border-color: #3f3f46 !important; }
-
-.text-slate-100, .text-zinc-100 { color: #f4f4f5 !important; }
-.text-white { color: #ffffff !important; }
-.text-slate-300, .text-zinc-300 { color: #d4d4d8 !important; }
-.text-slate-400, .text-zinc-400 { color: #a1a1aa !important; }
-.text-slate-500, .text-zinc-500 { color: #71717a !important; }
-
-/* Override any leftover colorful utility classes */
-.bg-cyan-500, .bg-cyan-500\/15, .bg-cyan-500\/10, .bg-cyan-500\/25,
-.bg-blue-500, .bg-indigo-500, .bg-violet-500, .bg-purple-500 {
-  background-color: #27272a !important;
-  color: #f4f4f5 !important;
-}
-
-.text-cyan-300, .text-cyan-400, .text-cyan-500,
-.text-blue-400, .text-indigo-400, .text-violet-400, .text-purple-400 {
-  color: #e4e4e7 !important;
-}
-
-.border-cyan-500, .border-blue-500 {
-  border-color: #52525b !important;
-}
-
-.border-t-cyan-500 {
-  border-top-color: #e4e4e7 !important;
-}
-
-/* Custom Black & Grey Scrollbars */
+/* Monochromatic & Accent Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: #09090b;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #27272a;
-  border-radius: 3px;
+  border-radius: 4px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #3f3f46;
-}
-
-/* Accessibility: Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-#root {
-  min-height: 100vh;
-}
-
-* {
-  box-sizing: border-box;
 }

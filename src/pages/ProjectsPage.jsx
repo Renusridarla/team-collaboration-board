@@ -1,10 +1,12 @@
-import { useNavigate } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import DashboardLayout from '../components/DashboardLayout';
 import EmptyState from '../components/EmptyState';
-import LoadingSpinner from '../components/LoadingSpinner';
+import { CardSkeleton } from '../components/SkeletonLoader';
 import ProjectList from '../components/ProjectList';
+import Magnetic from '../components/Magnetic';
 import { useProjects } from '../hooks/useProjects';
+import { Plus } from 'lucide-react';
 
 export default function ProjectsPage() {
   const navigate = useNavigate();
@@ -30,9 +32,20 @@ export default function ProjectsPage() {
   return (
     <DashboardLayout title="Projects">
       <div className="space-y-6 animate-fade-in">
-        <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Projects</h2>
-          <p className="text-sm text-zinc-400">Browse the projects you have access to.</p>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-tight">Projects</h2>
+            <p className="text-sm text-zinc-400">Browse and manage team collaboration projects</p>
+          </div>
+          <Magnetic strength={8}>
+            <Link
+              to="/projects/new"
+              className="flex items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white shadow"
+            >
+              <Plus size={18} />
+              <span>Create Project</span>
+            </Link>
+          </Magnetic>
         </div>
 
         {error ? (
@@ -48,11 +61,17 @@ export default function ProjectsPage() {
         ) : null}
 
         {loading ? (
-          <LoadingSpinner />
-        ) : projects.length === 0 ? (
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {[...Array(3)].map((_, i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : !projects || projects.length === 0 ? (
           <EmptyState
             title="No projects available"
-            description="There are no projects to display yet. Create a workspace or project to get started."
+            description="There are no projects created yet. Click 'Create Project' to get started."
+            actionText="Create Project"
+            onAction={() => navigate('/projects/new')}
           />
         ) : (
           <ProjectList projects={projects} onEdit={handleEdit} onDelete={handleDelete} />

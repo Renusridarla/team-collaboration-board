@@ -92,15 +92,13 @@ export default function LoginPage() {
               />
             </div>
 
-            <Magnetic strength={8} className="w-full">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
-              >
-                {isSubmitting ? 'Signing in...' : 'Sign In'}
-              </button>
-            </Magnetic>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full rounded-lg bg-zinc-100 px-4 py-2.5 text-sm font-semibold text-zinc-950 btn-interaction hover:bg-white disabled:opacity-50"
+            >
+              {isSubmitting ? 'Signing in...' : 'Sign In'}
+            </button>
           </form>
 
           <div className="pt-2 text-center text-xs text-zinc-400 border-t border-zinc-800">
